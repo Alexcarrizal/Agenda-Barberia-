@@ -10,6 +10,7 @@ export const DEFAULT_SETTINGS: BarberSettings = {
     code: 'MXN',
     symbol: '$',
   },
+  theme: 'light',
   weeklySchedule: {
     '1': { enabled: true, start: '09:00', end: '20:00' },
     '2': { enabled: true, start: '09:00', end: '20:00' },

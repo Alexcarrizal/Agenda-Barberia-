@@ -5,7 +5,9 @@ import {
   ChevronRight,
   Clock,
   Lock,
+  Moon,
   Plus,
+  Sun,
   Unlock,
 } from 'lucide-react';
 import {
@@ -13,6 +15,7 @@ import {
   BarberSettings,
   Client,
   FreeGap,
+  ThemeMode,
   TimeBlock,
 } from '../types/agenda';
 import {
@@ -36,12 +39,14 @@ export type AgendaViewMode = 'lista' | 'calendario';
 interface AgendaViewProps {
   selectedDate: string;
   viewMode: AgendaViewMode;
+  theme: ThemeMode;
   settings: BarberSettings;
   clients: Client[];
   appointments: Appointment[];
   blocks: TimeBlock[];
   onChangeDate: (dateISO: string) => void;
   onChangeViewMode: (mode: AgendaViewMode) => void;
+  onToggleTheme: () => void;
   onOpenCalendarModal: () => void;
   onOpenNewAppointment: (prefillDate: string, prefillTime?: string) => void;
   onOpenAppointmentDetail: (appointment: Appointment) => void;
@@ -54,12 +59,14 @@ const PX_PER_MIN = 2.1; // 126px per hour -> 20 min = 42px, 30 min = 63px, 40 mi
 export const AgendaView: React.FC<AgendaViewProps> = ({
   selectedDate,
   viewMode,
+  theme,
   settings,
   clients,
   appointments,
   blocks,
   onChangeDate,
   onChangeViewMode,
+  onToggleTheme,
   onOpenCalendarModal,
   onOpenNewAppointment,
   onOpenAppointmentDetail,
@@ -182,15 +189,15 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
   return (
     <div className="flex flex-col min-h-full">
       {/* Top sticky header */}
-      <header className="sticky top-0 z-30 bg-white border-b border-slate-200 px-3 sm:px-5 pt-2.5 pb-2.5 shadow-2xs">
+      <header className="sticky top-0 z-30 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3 sm:px-5 pt-2.5 pb-2.5 shadow-2xs">
         <div className="max-w-3xl mx-auto space-y-2.5">
-          {/* Row 1: Date switcher (< Date >) + Hoy */}
+          {/* Row 1: Date switcher (< Date >) + Hoy + Bloquear tiempo */}
           <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-1 min-w-0">
+            <div className="flex items-center gap-0.5 sm:gap-1 min-w-0">
               <button
                 type="button"
                 onClick={() => onChangeDate(addDays(selectedDate, -1))}
-                className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl text-[#1B3B6F] hover:bg-slate-100 active:bg-slate-200 transition-colors shrink-0"
+                className="min-h-[44px] min-w-[40px] sm:min-w-[44px] flex items-center justify-center rounded-xl text-[#1B3B6F] dark:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 active:bg-slate-200 dark:active:bg-slate-700 transition-colors shrink-0"
                 aria-label="Día anterior"
               >
                 <ChevronLeft className="w-5 h-5" />
@@ -199,11 +206,11 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
               <button
                 type="button"
                 onClick={onOpenCalendarModal}
-                className="min-h-[44px] px-2.5 rounded-xl flex items-center gap-2 hover:bg-slate-100 active:bg-slate-200 transition-colors min-w-0"
+                className="min-h-[44px] px-2 sm:px-2.5 rounded-xl flex items-center gap-1.5 sm:gap-2 hover:bg-slate-100 dark:hover:bg-slate-800 active:bg-slate-200 dark:active:bg-slate-700 transition-colors min-w-0"
                 aria-label="Abrir calendario mensual"
               >
-                <CalendarDays className="w-4 h-4 text-[#1B3B6F] shrink-0" />
-                <span className="text-base font-bold text-slate-900 truncate capitalize">
+                <CalendarDays className="w-4 h-4 text-[#1B3B6F] dark:text-blue-400 shrink-0" />
+                <span className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 truncate capitalize">
                   {formatHeaderDate(selectedDate)}
                 </span>
               </button>
@@ -211,7 +218,7 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
               <button
                 type="button"
                 onClick={() => onChangeDate(addDays(selectedDate, 1))}
-                className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl text-[#1B3B6F] hover:bg-slate-100 active:bg-slate-200 transition-colors shrink-0"
+                className="min-h-[44px] min-w-[40px] sm:min-w-[44px] flex items-center justify-center rounded-xl text-[#1B3B6F] dark:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 active:bg-slate-200 dark:active:bg-slate-700 transition-colors shrink-0"
                 aria-label="Día siguiente"
               >
                 <ChevronRight className="w-5 h-5" />
@@ -223,7 +230,7 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
                 <button
                   type="button"
                   onClick={() => onChangeDate(todayISO)}
-                  className="min-h-[38px] px-3 py-1.5 rounded-xl bg-blue-50 text-[#1B3B6F] text-xs font-bold hover:bg-blue-100 transition-colors whitespace-nowrap"
+                  className="min-h-[38px] px-2.5 sm:px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#1B3B6F] dark:text-blue-300 text-xs font-bold hover:bg-blue-100 dark:hover:bg-blue-900/60 transition-colors whitespace-nowrap"
                 >
                   Hoy
                 </button>
@@ -231,7 +238,7 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
               <button
                 type="button"
                 onClick={() => onOpenBlockModal(selectedDate)}
-                className="min-h-[38px] px-3 py-1.5 rounded-xl border border-[#1B3B6F]/25 bg-white text-[#1B3B6F] text-xs font-semibold hover:bg-blue-50 active:bg-blue-100 transition-colors flex items-center gap-1.5 whitespace-nowrap"
+                className="min-h-[38px] px-2.5 sm:px-3 py-1.5 rounded-xl border border-[#1B3B6F]/25 dark:border-blue-500/40 bg-white dark:bg-slate-800 text-[#1B3B6F] dark:text-blue-300 text-xs font-semibold hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-1.5 whitespace-nowrap"
               >
                 <Lock className="w-3.5 h-3.5 shrink-0" />
                 <span>Bloquear tiempo</span>
@@ -239,10 +246,10 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
             </div>
           </div>
 
-          {/* Row 2: Lista / Calendario segmented control + quick day summary */}
-          <div className="flex items-center justify-between gap-3">
+          {/* Row 2: Lista / Calendario segmented control + quick day summary + theme toggle */}
+          <div className="flex items-center justify-between gap-2">
             <div
-              className="grid grid-cols-2 p-1 bg-slate-100 rounded-xl w-48 shrink-0"
+              className="grid grid-cols-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl w-44 sm:w-48 shrink-0"
               role="tablist"
               aria-label="Vista de agenda"
             >
@@ -253,8 +260,8 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
                 onClick={() => onChangeViewMode('lista')}
                 className={`min-h-[34px] text-xs font-semibold rounded-lg transition-colors whitespace-nowrap ${
                   viewMode === 'lista'
-                    ? 'bg-[#1B3B6F] text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-[#1B3B6F] dark:bg-blue-600 text-white shadow-xs'
+                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 Lista
@@ -266,21 +273,36 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
                 onClick={() => onChangeViewMode('calendario')}
                 className={`min-h-[34px] text-xs font-semibold rounded-lg transition-colors whitespace-nowrap ${
                   viewMode === 'calendario'
-                    ? 'bg-[#1B3B6F] text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-[#1B3B6F] dark:bg-blue-600 text-white shadow-xs'
+                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 Calendario
               </button>
             </div>
 
-            <div className="text-xs text-slate-600 font-medium tabular-nums truncate text-right">
-              {isToday ? 'Hoy · ' : ''}
-              {activeAppointments.length}{' '}
-              {activeAppointments.length === 1 ? 'cita' : 'citas'}
-              {!isDayBlocked && daySchedule?.enabled && totalFreeMin > 0
-                ? ` · ${formatDurationLabel(totalFreeMin)} libres`
-                : ''}
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="text-xs text-slate-600 dark:text-slate-300 font-medium tabular-nums truncate text-right">
+                {isToday ? 'Hoy · ' : ''}
+                {activeAppointments.length}{' '}
+                {activeAppointments.length === 1 ? 'cita' : 'citas'}
+                {!isDayBlocked && daySchedule?.enabled && totalFreeMin > 0
+                  ? ` · ${formatDurationLabel(totalFreeMin)} libres`
+                  : ''}
+              </div>
+              <button
+                type="button"
+                onClick={onToggleTheme}
+                className="min-h-[38px] min-w-[38px] flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-amber-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors shrink-0"
+                aria-label={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+                title={theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}
+              >
+                {theme === 'dark' ? (
+                  <Sun className="w-4 h-4" />
+                ) : (
+                  <Moon className="w-4 h-4" />
+                )}
+              </button>
             </div>
           </div>
         </div>
@@ -290,19 +312,19 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
       <main className="flex-1 px-3 sm:px-5 pt-3 pb-32 max-w-3xl w-full mx-auto space-y-3">
         {/* Full-day blocked band */}
         {isDayBlocked && (
-          <div className="rounded-2xl bg-amber-50 border border-amber-300 px-4 py-3 flex items-center justify-between gap-3">
+          <div className="rounded-2xl bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-800 px-4 py-3 flex items-center justify-between gap-3">
             <div className="min-w-0">
-              <div className="flex items-center gap-2 text-amber-950 font-bold text-sm">
-                <Lock className="w-4 h-4 text-amber-700 shrink-0" />
+              <div className="flex items-center gap-2 text-amber-950 dark:text-amber-100 font-bold text-sm">
+                <Lock className="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0" />
                 <span>Día bloqueado</span>
               </div>
               {fullDayBlocks[0].reason && (
-                <p className="text-xs text-amber-900 mt-0.5 truncate">
+                <p className="text-xs text-amber-900 dark:text-amber-200 mt-0.5 truncate">
                   Motivo: {fullDayBlocks[0].reason}
                 </p>
               )}
               {fullDayBlocks[0].type === 'date_range' && (
-                <p className="text-[11px] text-amber-800 mt-0.5 tabular-nums">
+                <p className="text-[11px] text-amber-800 dark:text-amber-300 mt-0.5 tabular-nums">
                   Del {fullDayBlocks[0].startDate} al {fullDayBlocks[0].endDate}
                 </p>
               )}
@@ -310,7 +332,7 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
             <button
               type="button"
               onClick={() => onRemoveBlock(fullDayBlocks[0].id)}
-              className="min-h-[40px] px-3 py-1.5 rounded-xl bg-white border border-amber-300 text-amber-950 text-xs font-semibold hover:bg-amber-100 transition-colors flex items-center gap-1.5 shrink-0"
+              className="min-h-[40px] px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-amber-300 dark:border-amber-700 text-amber-950 dark:text-amber-200 text-xs font-semibold hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors flex items-center gap-1.5 shrink-0"
             >
               <Unlock className="w-3.5 h-3.5" />
               <span>Quitar bloqueo</span>
@@ -320,10 +342,10 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
 
         {/* Shop closed notice */}
         {!isDayBlocked && (!daySchedule || !daySchedule.enabled) && (
-          <div className="rounded-2xl bg-slate-200/70 border border-slate-300 px-4 py-3 text-sm text-slate-700 flex items-center justify-between gap-3">
+          <div className="rounded-2xl bg-slate-200/70 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 px-4 py-3 text-sm text-slate-700 dark:text-slate-300 flex items-center justify-between gap-3">
             <div>
-              <p className="font-semibold text-slate-900">Día cerrado</p>
-              <p className="text-xs text-slate-600 mt-0.5">
+              <p className="font-semibold text-slate-900 dark:text-slate-100">Día cerrado</p>
+              <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
                 Este día aparece sin servicio en tu horario semanal (Ajustes).
               </p>
             </div>
@@ -332,7 +354,7 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
 
         {/* VIEW 1: CALENDARIO */}
         {viewMode === 'calendario' && (
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-2xs p-2.5 sm:p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-2xs p-2.5 sm:p-4">
             <div className="relative flex" style={{ height: `${timelineHeight}px` }}>
               {/* Left hours column */}
               <div className="w-12 sm:w-14 shrink-0 relative select-none">
@@ -341,7 +363,7 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
                   return (
                     <div
                       key={h}
-                      className="absolute left-0 right-1 -translate-y-2 text-[11px] font-mono-num text-slate-500 text-right pr-1.5"
+                      className="absolute left-0 right-1 -translate-y-2 text-[11px] font-mono-num text-slate-500 dark:text-slate-400 text-right pr-1.5"
                       style={{ top: `${topPx}px` }}
                     >
                       {minutesToTime(h * 60)}
@@ -351,14 +373,14 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
               </div>
 
               {/* Right track: grid lines + gaps + blocks + appointments */}
-              <div className="flex-1 relative border-l border-slate-200 ml-1">
+              <div className="flex-1 relative border-l border-slate-200 dark:border-slate-800 ml-1">
                 {/* Hour grid lines */}
                 {timelineBounds.hours.map((h) => {
                   const topPx = (h * 60 - timelineBounds.startMin) * PX_PER_MIN;
                   return (
                     <div
                       key={`line-${h}`}
-                      className="absolute left-0 right-0 border-t border-slate-100 pointer-events-none"
+                      className="absolute left-0 right-0 border-t border-slate-100 dark:border-slate-800/80 pointer-events-none"
                       style={{ top: `${topPx}px` }}
                     />
                   );
@@ -377,20 +399,20 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
                         key={`gap-${gap.startTime}`}
                         type="button"
                         onClick={() => onOpenNewAppointment(selectedDate, gap.startTime)}
-                        className="absolute left-1.5 right-0.5 rounded-xl border border-dashed border-slate-300 bg-slate-50/80 hover:bg-blue-50/70 hover:border-[#1B3B6F]/50 active:bg-blue-100/60 transition-colors px-2.5 flex items-center justify-between text-left group"
+                        className="absolute left-1.5 right-0.5 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-800/50 hover:bg-blue-50/70 dark:hover:bg-blue-950/40 hover:border-[#1B3B6F]/50 dark:hover:border-blue-500/60 active:bg-blue-100/60 dark:active:bg-blue-950/60 transition-colors px-2.5 flex items-center justify-between text-left group"
                         style={{ top: `${topPx}px`, height: `${heightPx}px` }}
                         aria-label={`Agendar en espacio libre de ${gap.startTime} a ${gap.endTime}`}
                       >
                         <div className="flex items-center gap-1.5 min-w-0">
-                          <Plus className="w-3.5 h-3.5 text-[#1B3B6F] shrink-0" />
-                          <span className="text-xs font-medium text-slate-600 group-hover:text-[#1B3B6F] truncate">
+                          <Plus className="w-3.5 h-3.5 text-[#1B3B6F] dark:text-blue-400 shrink-0" />
+                          <span className="text-xs font-medium text-slate-600 dark:text-slate-300 group-hover:text-[#1B3B6F] dark:group-hover:text-blue-300 truncate">
                             {isCompact
                               ? `Libre ${gap.startTime}–${gap.endTime} (${gap.durationMin}m)`
                               : `Espacio libre · ${gap.startTime} – ${gap.endTime}`}
                           </span>
                         </div>
                         {!isCompact && (
-                          <span className="text-[11px] font-semibold text-[#1B3B6F] tabular-nums shrink-0 ml-2">
+                          <span className="text-[11px] font-semibold text-[#1B3B6F] dark:text-blue-400 tabular-nums shrink-0 ml-2">
                             {formatDurationLabel(gap.durationMin)}
                           </span>
                         )}
@@ -409,22 +431,22 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
                   return (
                     <div
                       key={hb.id}
-                      className="absolute left-1.5 right-0.5 rounded-xl bg-blocked-stripes border border-slate-300 px-2.5 py-1.5 flex items-center justify-between gap-2 overflow-hidden"
+                      className="absolute left-1.5 right-0.5 rounded-xl bg-blocked-stripes border border-slate-300 dark:border-slate-700 px-2.5 py-1.5 flex items-center justify-between gap-2 overflow-hidden"
                       style={{ top: `${topPx}px`, height: `${heightPx}px` }}
                     >
                       <div className="flex items-center gap-1.5 min-w-0">
-                        <Lock className="w-3.5 h-3.5 text-slate-600 shrink-0" />
-                        <span className="text-xs font-semibold text-slate-800 truncate">
+                        <Lock className="w-3.5 h-3.5 text-slate-600 dark:text-slate-300 shrink-0" />
+                        <span className="text-xs font-semibold text-slate-800 dark:text-slate-100 truncate">
                           Bloqueado{hb.reason ? ` · ${hb.reason}` : ''}
                         </span>
-                        <span className="text-[11px] font-mono-num text-slate-600 shrink-0 hidden sm:inline">
+                        <span className="text-[11px] font-mono-num text-slate-600 dark:text-slate-300 shrink-0 hidden sm:inline">
                           {hb.startTime}–{hb.endTime}
                         </span>
                       </div>
                       <button
                         type="button"
                         onClick={() => onRemoveBlock(hb.id)}
-                        className="min-h-[30px] px-2 py-0.5 rounded-lg bg-white border border-slate-300 text-[11px] font-semibold text-slate-700 hover:bg-slate-100 shrink-0"
+                        className="min-h-[30px] px-2 py-0.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-[11px] font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 shrink-0"
                       >
                         Quitar
                       </button>
@@ -449,8 +471,10 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
                       key={appt.id}
                       type="button"
                       onClick={() => onOpenAppointmentDetail(appt)}
-                      className={`absolute left-1.5 right-0.5 rounded-xl bg-white border ${statusMeta.borderClass} shadow-xs hover:shadow-sm active:scale-[0.995] transition-all px-2.5 text-left overflow-hidden flex ${
-                        isShort ? 'flex-row items-center justify-between gap-2 py-0.5' : 'flex-col justify-center py-1.5'
+                      className={`absolute left-1.5 right-0.5 rounded-xl bg-white dark:bg-slate-800 border ${statusMeta.borderClass} shadow-xs hover:shadow-sm active:scale-[0.995] transition-all px-2.5 text-left overflow-hidden flex ${
+                        isShort
+                          ? 'flex-row items-center justify-between gap-2 py-0.5'
+                          : 'flex-col justify-center py-1.5'
                       }`}
                       style={{ top: `${topPx}px`, height: `${heightPx}px` }}
                     >
@@ -458,10 +482,10 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
                         <>
                           <div className="flex items-center gap-1.5 min-w-0">
                             <span className={`w-2 h-2 rounded-full shrink-0 ${statusMeta.dotClass}`} />
-                            <span className="text-xs font-bold text-slate-900 truncate">
+                            <span className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">
                               {clientName}
                             </span>
-                            <span className="text-[11px] font-mono-num text-slate-600 shrink-0">
+                            <span className="text-[11px] font-mono-num text-slate-600 dark:text-slate-300 shrink-0">
                               {appt.startTime}–{appt.endTime}
                             </span>
                           </div>
@@ -474,7 +498,7 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
                       ) : (
                         <>
                           <div className="flex items-center justify-between gap-2 w-full">
-                            <span className="text-sm font-bold text-slate-900 truncate">
+                            <span className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate">
                               {clientName}
                             </span>
                             <span
@@ -484,15 +508,15 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
                               {statusMeta.label}
                             </span>
                           </div>
-                          <div className="flex items-center justify-between gap-2 text-xs text-slate-600 mt-0.5">
+                          <div className="flex items-center justify-between gap-2 text-xs text-slate-600 dark:text-slate-300 mt-0.5">
                             <span className="truncate">
-                              <span className="font-mono-num text-slate-700 font-medium">
+                              <span className="font-mono-num text-slate-700 dark:text-slate-200 font-medium">
                                 {appt.startTime}–{appt.endTime}
                               </span>
-                              <span className="mx-1.5 text-slate-300">·</span>
+                              <span className="mx-1.5 text-slate-300 dark:text-slate-600">·</span>
                               <span>{appt.serviceName}</span>
                             </span>
-                            <span className="text-[11px] font-semibold text-slate-700 shrink-0 tabular-nums">
+                            <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 shrink-0 tabular-nums">
                               {appt.paymentStatus === 'cobrado' ? 'Cobrado' : 'Pendiente'}
                             </span>
                           </div>
@@ -510,13 +534,13 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
         {viewMode === 'lista' && (
           <div className="space-y-2.5">
             {listItems.length === 0 ? (
-              <div className="bg-white rounded-2xl border border-slate-200 p-6 text-center">
-                <p className="text-sm font-semibold text-slate-900">
+              <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 text-center">
+                <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                   {isDayBlocked
                     ? 'Este día está bloqueado'
                     : 'No hay citas ni horarios disponibles para este día'}
                 </p>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   {isDayBlocked
                     ? 'Quita el bloqueo arriba si necesitas volver a recibir citas.'
                     : 'Puedes habilitar el horario en Ajustes o cambiar de fecha.'}
@@ -534,24 +558,24 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
                       key={appt.id}
                       type="button"
                       onClick={() => onOpenAppointmentDetail(appt)}
-                      className="w-full bg-white rounded-2xl border border-slate-200/90 p-3.5 shadow-2xs hover:border-[#1B3B6F]/40 active:bg-slate-50 transition-all text-left flex items-start justify-between gap-3"
+                      className="w-full bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 p-3.5 shadow-2xs hover:border-[#1B3B6F]/40 dark:hover:border-blue-500/50 active:bg-slate-50 dark:active:bg-slate-800 transition-all text-left flex items-start justify-between gap-3"
                     >
                       <div className="flex gap-3 min-w-0">
-                        <div className="flex flex-col items-center justify-center bg-slate-100 rounded-xl px-2.5 py-2 shrink-0 min-w-[70px]">
-                          <span className="text-sm font-bold font-mono-num text-slate-900">
+                        <div className="flex flex-col items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-xl px-2.5 py-2 shrink-0 min-w-[70px]">
+                          <span className="text-sm font-bold font-mono-num text-slate-900 dark:text-slate-100">
                             {appt.startTime}
                           </span>
-                          <span className="text-[11px] font-mono-num text-slate-500">
+                          <span className="text-[11px] font-mono-num text-slate-500 dark:text-slate-400">
                             {appt.endTime}
                           </span>
                         </div>
                         <div className="min-w-0">
-                          <h3 className="text-base font-bold text-slate-900 truncate">
+                          <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 truncate">
                             {client?.name ?? 'Cliente'}
                           </h3>
-                          <p className="text-xs text-slate-600 mt-0.5 truncate">
+                          <p className="text-xs text-slate-600 dark:text-slate-300 mt-0.5 truncate">
                             {appt.serviceName} · {appt.durationMin} min ·{' '}
-                            <span className="font-semibold text-slate-800 tabular-nums">
+                            <span className="font-semibold text-slate-800 dark:text-slate-100 tabular-nums">
                               {formatCurrency(
                                 appt.price,
                                 settings.currency.symbol,
@@ -569,8 +593,8 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
                             <span
                               className={`text-xs font-semibold ${
                                 appt.paymentStatus === 'cobrado'
-                                  ? 'text-emerald-700'
-                                  : 'text-slate-500'
+                                  ? 'text-emerald-700 dark:text-emerald-400'
+                                  : 'text-slate-500 dark:text-slate-400'
                               }`}
                             >
                               Pago: {appt.paymentStatus === 'cobrado' ? 'Cobrado' : 'Pendiente'}
@@ -587,17 +611,17 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
                   return (
                     <div
                       key={hb.id}
-                      className="rounded-2xl bg-blocked-stripes border border-slate-300 px-3.5 py-3 flex items-center justify-between gap-3"
+                      className="rounded-2xl bg-blocked-stripes border border-slate-300 dark:border-slate-700 px-3.5 py-3 flex items-center justify-between gap-3"
                     >
                       <div className="flex items-center gap-3 min-w-0">
-                        <div className="w-10 h-10 rounded-xl bg-white/80 flex items-center justify-center shrink-0">
-                          <Lock className="w-4 h-4 text-slate-700" />
+                        <div className="w-10 h-10 rounded-xl bg-white/80 dark:bg-slate-900/80 flex items-center justify-center shrink-0">
+                          <Lock className="w-4 h-4 text-slate-700 dark:text-slate-300" />
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-bold text-slate-900 truncate">
+                          <p className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate">
                             Horario bloqueado{hb.reason ? ` · ${hb.reason}` : ''}
                           </p>
-                          <p className="text-xs font-mono-num text-slate-600">
+                          <p className="text-xs font-mono-num text-slate-600 dark:text-slate-300">
                             {hb.startTime} – {hb.endTime}
                           </p>
                         </div>
@@ -605,7 +629,7 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
                       <button
                         type="button"
                         onClick={() => onRemoveBlock(hb.id)}
-                        className="min-h-[40px] px-3 py-1.5 rounded-xl bg-white border border-slate-300 text-xs font-semibold text-slate-800 hover:bg-slate-100 shrink-0"
+                        className="min-h-[40px] px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 shrink-0"
                       >
                         Quitar bloqueo
                       </button>
@@ -620,22 +644,22 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
                     key={`list-gap-${gap.startTime}`}
                     type="button"
                     onClick={() => onOpenNewAppointment(selectedDate, gap.startTime)}
-                    className="w-full rounded-2xl border border-dashed border-slate-300 bg-white/80 hover:bg-blue-50/70 hover:border-[#1B3B6F]/50 px-3.5 py-3 flex items-center justify-between gap-3 transition-colors text-left"
+                    className="w-full rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 bg-white/80 dark:bg-slate-900/60 hover:bg-blue-50/70 dark:hover:bg-blue-950/40 hover:border-[#1B3B6F]/50 dark:hover:border-blue-500/60 px-3.5 py-3 flex items-center justify-between gap-3 transition-colors text-left"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-10 h-10 rounded-xl bg-blue-50 text-[#1B3B6F] flex items-center justify-center shrink-0">
+                      <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#1B3B6F] dark:text-blue-400 flex items-center justify-center shrink-0">
                         <Clock className="w-4 h-4" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold text-slate-800">
+                        <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                           Espacio libre ({formatDurationLabel(gap.durationMin)})
                         </p>
-                        <p className="text-xs font-mono-num text-slate-500">
+                        <p className="text-xs font-mono-num text-slate-500 dark:text-slate-400">
                           {gap.startTime} – {gap.endTime}
                         </p>
                       </div>
                     </div>
-                    <span className="text-xs font-bold text-[#1B3B6F] flex items-center gap-1 shrink-0">
+                    <span className="text-xs font-bold text-[#1B3B6F] dark:text-blue-400 flex items-center gap-1 shrink-0">
                       <Plus className="w-4 h-4" />
                       Agendar
                     </span>
@@ -652,7 +676,7 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
             <button
               type="button"
               onClick={() => setShowCancelled((v) => !v)}
-              className="text-xs font-semibold text-slate-500 hover:text-slate-800 py-2 px-1"
+              className="text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 py-2 px-1"
             >
               {showCancelled ? 'Ocultar' : 'Ver'} citas canceladas de este día (
               {cancelledAppointments.length})
@@ -666,17 +690,17 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
                       key={appt.id}
                       type="button"
                       onClick={() => onOpenAppointmentDetail(appt)}
-                      className="w-full bg-white/80 rounded-xl border border-rose-200 px-3.5 py-2.5 flex items-center justify-between gap-2 text-left"
+                      className="w-full bg-white/80 dark:bg-slate-900 rounded-xl border border-rose-200 dark:border-rose-900/70 px-3.5 py-2.5 flex items-center justify-between gap-2 text-left"
                     >
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold text-slate-700 line-through truncate">
+                        <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 line-through truncate">
                           {client?.name ?? 'Cliente'}
                         </p>
-                        <p className="text-xs text-slate-500 font-mono-num">
+                        <p className="text-xs text-slate-500 dark:text-slate-400 font-mono-num">
                           {appt.startTime}–{appt.endTime} · {appt.serviceName}
                         </p>
                       </div>
-                      <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-rose-50 text-rose-800 shrink-0">
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-rose-50 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 shrink-0">
                         Cancelada
                       </span>
                     </button>

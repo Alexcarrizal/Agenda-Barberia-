@@ -21,8 +21,19 @@
       href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <script>
+      try {
+        var raw = localStorage.getItem('agenda_barberia_state_v1');
+        if (raw) {
+          var parsed = JSON.parse(raw);
+          if (parsed && parsed.settings && parsed.settings.theme === 'dark') {
+            document.documentElement.classList.add('dark');
+          }
+        }
+      } catch (e) {}
+    </script>
   </head>
-  <body class="bg-[#F2F4F7] text-slate-900 antialiased selection:bg-[#1B3B6F]/15 selection:text-[#1B3B6F]">
+  <body class="bg-[#F2F4F7] dark:bg-[#0B1120] text-slate-900 dark:text-slate-100 antialiased selection:bg-[#1B3B6F]/15 dark:selection:bg-blue-500/25 selection:text-[#1B3B6F] dark:selection:text-blue-300">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

@@ -54,25 +54,27 @@ export const WhatsAppReminderModal: React.FC<WhatsAppReminderModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-60 flex items-end sm:items-center justify-center bg-slate-900/55 backdrop-blur-xs"
+      className="fixed inset-0 z-60 flex items-end sm:items-center justify-center bg-slate-900/55 dark:bg-black/75 backdrop-blur-xs"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden pb-safe"
+        className="w-full max-w-md bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden pb-safe border border-transparent dark:border-slate-800"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
         aria-label="Recordatorio por WhatsApp"
       >
-        <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+        <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <MessageCircle className="w-5 h-5 text-emerald-700" />
-            <h2 className="text-base font-bold text-slate-900">Recordar por WhatsApp</h2>
+            <MessageCircle className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />
+            <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
+              Recordar por WhatsApp
+            </h2>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="min-h-[40px] min-w-[40px] flex items-center justify-center rounded-xl text-slate-500 hover:bg-slate-100"
+            className="min-h-[40px] min-w-[40px] flex items-center justify-center rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
             aria-label="Cerrar"
           >
             <X className="w-5 h-5" />
@@ -83,11 +85,11 @@ export const WhatsAppReminderModal: React.FC<WhatsAppReminderModalProps> = ({
           {/* Phone section & validation */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-slate-700">
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
                 WhatsApp de {client.name}
               </label>
               {phoneSavedFeedback && (
-                <span className="text-xs font-semibold text-emerald-700 flex items-center gap-1">
+                <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 flex items-center gap-1">
                   <Check className="w-3.5 h-3.5" />
                   Teléfono guardado
                 </span>
@@ -99,17 +101,17 @@ export const WhatsAppReminderModal: React.FC<WhatsAppReminderModalProps> = ({
                 value={phoneInput}
                 onChange={(e) => setPhoneInput(e.target.value)}
                 placeholder={`${settings.defaultCountryCode}5512345678`}
-                className={`flex-1 min-h-[44px] px-3 py-2 rounded-xl border text-sm font-mono-num focus:outline-none focus:ring-2 ${
+                className={`flex-1 min-h-[44px] px-3 py-2 rounded-xl border text-sm font-mono-num text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 ${
                   phoneCheck.valid
-                    ? 'border-slate-300 focus:ring-[#1B3B6F]'
-                    : 'border-rose-300 bg-rose-50/40 focus:ring-rose-500'
+                    ? 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-[#1B3B6F] dark:focus:ring-blue-500'
+                    : 'border-rose-300 dark:border-rose-700 bg-rose-50/40 dark:bg-rose-950/40 focus:ring-rose-500'
                 }`}
               />
               {phoneInput.trim() !== client.phone.trim() && (
                 <button
                   type="button"
                   onClick={handleSaveFixedPhone}
-                  className="min-h-[44px] px-3 rounded-xl bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 shrink-0"
+                  className="min-h-[44px] px-3 rounded-xl bg-slate-900 dark:bg-blue-600 text-white text-xs font-semibold hover:bg-slate-800 dark:hover:bg-blue-500 shrink-0"
                 >
                   Guardar
                 </button>
@@ -117,8 +119,8 @@ export const WhatsAppReminderModal: React.FC<WhatsAppReminderModalProps> = ({
             </div>
 
             {!phoneCheck.valid && (
-              <div className="rounded-xl bg-amber-50 border border-amber-200 px-3 py-2 flex items-start gap-2 text-amber-950">
-                <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+              <div className="rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 px-3 py-2 flex items-start gap-2 text-amber-950 dark:text-amber-100">
+                <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
                 <div className="text-xs space-y-1">
                   <p className="font-semibold">{phoneCheck.reason}</p>
                   <button
@@ -130,7 +132,7 @@ export const WhatsAppReminderModal: React.FC<WhatsAppReminderModalProps> = ({
                       );
                       setPhoneInput(prefixed);
                     }}
-                    className="font-bold text-[#1B3B6F] underline"
+                    className="font-bold text-[#1B3B6F] dark:text-blue-400 underline"
                   >
                     Agregar código {settings.defaultCountryCode} automáticamente
                   </button>
@@ -142,13 +144,15 @@ export const WhatsAppReminderModal: React.FC<WhatsAppReminderModalProps> = ({
           {/* Editable message */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-slate-700">Mensaje editable</label>
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                Mensaje editable
+              </label>
               <button
                 type="button"
                 onClick={() =>
                   setMessage(buildWhatsAppMessage(appointment, client.name, settings))
                 }
-                className="text-xs font-semibold text-[#1B3B6F] hover:underline"
+                className="text-xs font-semibold text-[#1B3B6F] dark:text-blue-400 hover:underline"
               >
                 Restablecer texto
               </button>
@@ -157,9 +161,9 @@ export const WhatsAppReminderModal: React.FC<WhatsAppReminderModalProps> = ({
               rows={5}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm text-slate-900 leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#1B3B6F]"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#1B3B6F] dark:focus:ring-blue-500"
             />
-            <p className="text-[11px] text-slate-500">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400">
               Al abrir WhatsApp tú decides cuándo enviar el mensaje. El estado de la cita no cambiará automáticamente.
             </p>
           </div>
@@ -172,7 +176,10 @@ export const WhatsAppReminderModal: React.FC<WhatsAppReminderModalProps> = ({
               rel="noopener noreferrer"
               onClick={() => {
                 if (phoneInput.trim() !== client.phone.trim()) {
-                  onUpdateClientPhone(client.id, ensurePhoneWithCountryCode(phoneInput, settings.defaultCountryCode));
+                  onUpdateClientPhone(
+                    client.id,
+                    ensurePhoneWithCountryCode(phoneInput, settings.defaultCountryCode)
+                  );
                 }
               }}
               className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white text-sm font-bold flex items-center justify-center gap-2 transition-colors shadow-xs"
@@ -185,7 +192,7 @@ export const WhatsAppReminderModal: React.FC<WhatsAppReminderModalProps> = ({
             <button
               type="button"
               disabled
-              className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-slate-200 text-slate-400 text-sm font-bold cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 text-sm font-bold cursor-not-allowed flex items-center justify-center gap-2"
             >
               <MessageCircle className="w-5 h-5" />
               <span>Corrige el teléfono para abrir WhatsApp</span>

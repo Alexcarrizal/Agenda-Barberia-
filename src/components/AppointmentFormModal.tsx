@@ -199,25 +199,25 @@ export const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/50 backdrop-blur-xs"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/50 dark:bg-black/70 backdrop-blur-xs"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-lg bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl max-h-[92vh] flex flex-col overflow-hidden"
+        className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-2xl shadow-2xl max-h-[92vh] flex flex-col overflow-hidden border border-transparent dark:border-slate-800"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
         aria-label={editingAppointment ? 'Editar o reprogramar cita' : 'Nueva cita'}
       >
         {/* Header */}
-        <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between shrink-0">
-          <h2 className="text-lg font-bold text-slate-900">
+        <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
             {editingAppointment ? 'Editar o reprogramar cita' : 'Nueva cita'}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="min-h-[40px] min-w-[40px] flex items-center justify-center rounded-xl text-slate-500 hover:bg-slate-100"
+            className="min-h-[40px] min-w-[40px] flex items-center justify-center rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
             aria-label="Cerrar"
           >
             <X className="w-5 h-5" />
@@ -228,16 +228,18 @@ export const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
           {/* 1. CLIENTE */}
           <section className="space-y-2.5">
             <div className="flex items-center justify-between gap-2">
-              <label className="text-sm font-bold text-slate-900">1. Cliente</label>
+              <label className="text-sm font-bold text-slate-900 dark:text-slate-100">
+                1. Cliente
+              </label>
               {!editingAppointment && (
-                <div className="flex items-center gap-1 p-0.5 bg-slate-100 rounded-lg">
+                <div className="flex items-center gap-1 p-0.5 bg-slate-100 dark:bg-slate-800 rounded-lg">
                   <button
                     type="button"
                     onClick={() => setClientMode('search')}
                     className={`px-2.5 py-1.5 text-xs font-semibold rounded-md transition-colors ${
                       clientMode === 'search'
-                        ? 'bg-white text-[#1B3B6F] shadow-2xs'
-                        : 'text-slate-600'
+                        ? 'bg-white dark:bg-slate-700 text-[#1B3B6F] dark:text-blue-300 shadow-2xs'
+                        : 'text-slate-600 dark:text-slate-400'
                     }`}
                   >
                     Buscar existente
@@ -247,8 +249,8 @@ export const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
                     onClick={() => setClientMode('new')}
                     className={`px-2.5 py-1.5 text-xs font-semibold rounded-md transition-colors flex items-center gap-1 ${
                       clientMode === 'new'
-                        ? 'bg-white text-[#1B3B6F] shadow-2xs'
-                        : 'text-slate-600'
+                        ? 'bg-white dark:bg-slate-700 text-[#1B3B6F] dark:text-blue-300 shadow-2xs'
+                        : 'text-slate-600 dark:text-slate-400'
                     }`}
                   >
                     <UserPlus className="w-3.5 h-3.5" />
@@ -261,12 +263,12 @@ export const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
             {clientMode === 'search' ? (
               <div className="space-y-2">
                 {selectedClient ? (
-                  <div className="rounded-xl border border-[#1B3B6F]/30 bg-blue-50/70 px-3.5 py-2.5 flex items-center justify-between gap-2">
+                  <div className="rounded-xl border border-[#1B3B6F]/30 dark:border-blue-500/40 bg-blue-50/70 dark:bg-blue-950/50 px-3.5 py-2.5 flex items-center justify-between gap-2">
                     <div className="min-w-0">
-                      <p className="text-sm font-bold text-slate-900 truncate">
+                      <p className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate">
                         {selectedClient.name}
                       </p>
-                      <p className="text-xs font-mono-num text-slate-600">
+                      <p className="text-xs font-mono-num text-slate-600 dark:text-slate-300">
                         {selectedClient.phone}
                       </p>
                     </div>
@@ -274,7 +276,7 @@ export const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
                       <button
                         type="button"
                         onClick={() => setSelectedClientId('')}
-                        className="min-h-[36px] px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 shrink-0"
+                        className="min-h-[36px] px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 shrink-0"
                       >
                         Cambiar
                       </button>
@@ -289,13 +291,13 @@ export const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
                         value={clientSearch}
                         onChange={(e) => setClientSearch(e.target.value)}
                         placeholder="Buscar por nombre o teléfono..."
-                        className="w-full min-h-[44px] pl-9 pr-3 py-2 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B3B6F]"
+                        className="w-full min-h-[44px] pl-9 pr-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B3B6F] dark:focus:ring-blue-500"
                       />
                     </div>
-                    <div className="max-h-40 overflow-y-auto rounded-xl border border-slate-200 divide-y divide-slate-100">
+                    <div className="max-h-40 overflow-y-auto rounded-xl border border-slate-200 dark:border-slate-700 divide-y divide-slate-100 dark:divide-slate-800 bg-white dark:bg-slate-800/40">
                       {filteredClients.length === 0 ? (
                         <div className="p-3 text-center space-y-2">
-                          <p className="text-xs text-slate-500">
+                          <p className="text-xs text-slate-500 dark:text-slate-400">
                             No se encontraron clientes con "{clientSearch}".
                           </p>
                           <button
@@ -312,7 +314,7 @@ export const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
                                 setNewName(clientSearch.trim());
                               }
                             }}
-                            className="text-xs font-bold text-[#1B3B6F] hover:underline"
+                            className="text-xs font-bold text-[#1B3B6F] dark:text-blue-400 hover:underline"
                           >
                             + Dar de alta como nuevo cliente
                           </button>
@@ -323,12 +325,12 @@ export const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
                             key={c.id}
                             type="button"
                             onClick={() => setSelectedClientId(c.id)}
-                            className="w-full min-h-[44px] px-3 py-2 flex items-center justify-between gap-2 hover:bg-blue-50/60 text-left transition-colors"
+                            className="w-full min-h-[44px] px-3 py-2 flex items-center justify-between gap-2 hover:bg-blue-50/60 dark:hover:bg-blue-950/40 text-left transition-colors"
                           >
-                            <span className="text-sm font-semibold text-slate-900 truncate">
+                            <span className="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate">
                               {c.name}
                             </span>
-                            <span className="text-xs font-mono-num text-slate-500 shrink-0">
+                            <span className="text-xs font-mono-num text-slate-500 dark:text-slate-400 shrink-0">
                               {c.phone}
                             </span>
                           </button>
@@ -339,9 +341,9 @@ export const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
                 )}
               </div>
             ) : (
-              <div className="space-y-2.5 bg-slate-50 rounded-2xl p-3.5 border border-slate-200">
+              <div className="space-y-2.5 bg-slate-50 dark:bg-slate-800/60 rounded-2xl p-3.5 border border-slate-200 dark:border-slate-700">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     Nombre completo *
                   </label>
                   <input
@@ -349,11 +351,11 @@ export const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
                     value={newName}
                     onChange={(e) => setNewName(e.target.value)}
                     placeholder="Ej. Andrés García"
-                    className="w-full min-h-[44px] px-3 py-2 rounded-xl border border-slate-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#1B3B6F]"
+                    className="w-full min-h-[44px] px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B3B6F] dark:focus:ring-blue-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     Teléfono con código de país *
                   </label>
                   <input
@@ -361,18 +363,20 @@ export const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
                     value={newPhone}
                     onChange={(e) => setNewPhone(e.target.value)}
                     placeholder={`${settings.defaultCountryCode}5512345678`}
-                    className="w-full min-h-[44px] px-3 py-2 rounded-xl border border-slate-300 bg-white text-sm font-mono-num focus:outline-none focus:ring-2 focus:ring-[#1B3B6F]"
+                    className="w-full min-h-[44px] px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm font-mono-num focus:outline-none focus:ring-2 focus:ring-[#1B3B6F] dark:focus:ring-blue-500"
                   />
                   {!phoneValidation.valid && newPhone.trim().length > 0 && (
-                    <p className="text-xs text-rose-700 mt-1">{phoneValidation.reason}</p>
+                    <p className="text-xs text-rose-700 dark:text-rose-400 mt-1">
+                      {phoneValidation.reason}
+                    </p>
                   )}
                   {duplicateClientMatch && (
-                    <div className="mt-2 rounded-xl bg-amber-50 border border-amber-300 p-2.5 flex items-center justify-between gap-2">
+                    <div className="mt-2 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-800 p-2.5 flex items-center justify-between gap-2">
                       <div className="min-w-0">
-                        <p className="text-xs font-bold text-amber-950">
+                        <p className="text-xs font-bold text-amber-950 dark:text-amber-100">
                           Este número ya pertenece a {duplicateClientMatch.name}
                         </p>
-                        <p className="text-[11px] font-mono-num text-amber-800">
+                        <p className="text-[11px] font-mono-num text-amber-800 dark:text-amber-300">
                           {duplicateClientMatch.phone}
                         </p>
                       </div>
@@ -382,7 +386,7 @@ export const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
                           setSelectedClientId(duplicateClientMatch.id);
                           setClientMode('search');
                         }}
-                        className="min-h-[36px] px-2.5 py-1 rounded-lg bg-[#1B3B6F] text-white text-xs font-semibold shrink-0"
+                        className="min-h-[36px] px-2.5 py-1 rounded-lg bg-[#1B3B6F] dark:bg-blue-600 text-white text-xs font-semibold shrink-0"
                       >
                         Usar esa ficha
                       </button>
@@ -390,7 +394,7 @@ export const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
                   )}
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     Nota del cliente (opcional)
                   </label>
                   <input
@@ -398,7 +402,7 @@ export const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
                     value={newClientNotes}
                     onChange={(e) => setNewClientNotes(e.target.value)}
                     placeholder="Ej. Corte con máquina #2 a los lados"
-                    className="w-full min-h-[42px] px-3 py-2 rounded-xl border border-slate-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#1B3B6F]"
+                    className="w-full min-h-[42px] px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B3B6F] dark:focus:ring-blue-500"
                   />
                 </div>
               </div>
@@ -407,7 +411,9 @@ export const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
 
           {/* 2. SERVICIO */}
           <section className="space-y-2">
-            <label className="block text-sm font-bold text-slate-900">2. Servicio</label>
+            <label className="block text-sm font-bold text-slate-900 dark:text-slate-100">
+              2. Servicio
+            </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {settings.services.map((srv) => {
                 const isSelected = srv.id === selectedService?.id;
@@ -418,19 +424,23 @@ export const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
                     onClick={() => setServiceId(srv.id)}
                     className={`min-h-[48px] px-3 py-2.5 rounded-xl border text-left transition-all flex items-center justify-between gap-2 ${
                       isSelected
-                        ? 'border-[#1B3B6F] bg-blue-50/80 ring-1 ring-[#1B3B6F]'
-                        : 'border-slate-200 bg-white hover:border-slate-300'
+                        ? 'border-[#1B3B6F] dark:border-blue-500 bg-blue-50/80 dark:bg-blue-950/60 ring-1 ring-[#1B3B6F] dark:ring-blue-500'
+                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/60 hover:border-slate-300 dark:hover:border-slate-600'
                     }`}
                   >
                     <div className="min-w-0">
-                      <p className="text-sm font-bold text-slate-900 truncate">{srv.name}</p>
-                      <p className="text-xs text-slate-500 tabular-nums">{srv.durationMin} min</p>
+                      <p className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate">
+                        {srv.name}
+                      </p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 tabular-nums">
+                        {srv.durationMin} min
+                      </p>
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
-                      <span className="text-xs font-bold text-slate-900 tabular-nums">
+                      <span className="text-xs font-bold text-slate-900 dark:text-slate-100 tabular-nums">
                         {formatCurrency(srv.price, settings.currency.symbol, settings.currency.code)}
                       </span>
-                      {isSelected && <Check className="w-4 h-4 text-[#1B3B6F]" />}
+                      {isSelected && <Check className="w-4 h-4 text-[#1B3B6F] dark:text-blue-400" />}
                     </div>
                   </button>
                 );
@@ -440,26 +450,30 @@ export const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
 
           {/* 3. FECHA Y HORA */}
           <section className="space-y-2.5">
-            <label className="block text-sm font-bold text-slate-900">3. Fecha y hora</label>
+            <label className="block text-sm font-bold text-slate-900 dark:text-slate-100">
+              3. Fecha y hora
+            </label>
             <div className="grid grid-cols-2 gap-2.5">
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Fecha</label>
+                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                  Fecha
+                </label>
                 <input
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="w-full min-h-[44px] px-3 py-2 rounded-xl border border-slate-300 bg-white text-sm font-mono-num focus:outline-none focus:ring-2 focus:ring-[#1B3B6F]"
+                  className="w-full min-h-[44px] px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 dark:[color-scheme:dark] text-sm font-mono-num focus:outline-none focus:ring-2 focus:ring-[#1B3B6F] dark:focus:ring-blue-500"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">
+                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1">
                   Hora inicio
                 </label>
                 <input
                   type="time"
                   value={startTime}
                   onChange={(e) => setStartTime(e.target.value)}
-                  className="w-full min-h-[44px] px-3 py-2 rounded-xl border border-slate-300 bg-white text-sm font-mono-num focus:outline-none focus:ring-2 focus:ring-[#1B3B6F]"
+                  className="w-full min-h-[44px] px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 dark:[color-scheme:dark] text-sm font-mono-num focus:outline-none focus:ring-2 focus:ring-[#1B3B6F] dark:focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -468,20 +482,20 @@ export const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
             {!slotCheck.available && (
               <div
                 role="alert"
-                className="rounded-xl bg-rose-50 border border-rose-200 px-3.5 py-2.5 flex items-start gap-2.5 text-rose-900"
+                className="rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 px-3.5 py-2.5 flex items-start gap-2.5 text-rose-900 dark:text-rose-200"
               >
-                <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
                 <p className="text-xs font-medium leading-relaxed">{slotCheck.reason}</p>
               </div>
             )}
 
             {/* Quick pick available slots */}
             <div>
-              <p className="text-xs font-semibold text-slate-600 mb-1.5">
+              <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">
                 Horarios disponibles para {durationMin} min:
               </p>
               {suggestedStartTimes.length === 0 ? (
-                <p className="text-xs text-slate-500 italic">
+                <p className="text-xs text-slate-500 dark:text-slate-400 italic">
                   No hay espacios continuos de {durationMin} min este día.
                 </p>
               ) : (
@@ -495,8 +509,8 @@ export const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
                         onClick={() => setStartTime(t)}
                         className={`min-h-[34px] px-2.5 py-1 rounded-lg text-xs font-mono-num font-semibold transition-colors ${
                           active
-                            ? 'bg-[#1B3B6F] text-white'
-                            : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                            ? 'bg-[#1B3B6F] dark:bg-blue-600 text-white'
+                            : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700'
                         }`}
                       >
                         {t}
@@ -510,22 +524,28 @@ export const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
 
           {/* Resumen antes de guardar */}
           {selectedService && (
-            <div className="rounded-2xl bg-slate-100 border border-slate-200 p-3.5 grid grid-cols-3 gap-2 text-center">
+            <div className="rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-3.5 grid grid-cols-3 gap-2 text-center">
               <div>
-                <p className="text-[11px] font-medium text-slate-500">Duración</p>
-                <p className="text-sm font-bold text-slate-900 tabular-nums mt-0.5">
+                <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                  Duración
+                </p>
+                <p className="text-sm font-bold text-slate-900 dark:text-slate-100 tabular-nums mt-0.5">
                   {durationMin} min
                 </p>
               </div>
-              <div className="border-x border-slate-200">
-                <p className="text-[11px] font-medium text-slate-500">Termina</p>
-                <p className="text-sm font-bold font-mono-num text-slate-900 mt-0.5">
+              <div className="border-x border-slate-200 dark:border-slate-700">
+                <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                  Termina
+                </p>
+                <p className="text-sm font-bold font-mono-num text-slate-900 dark:text-slate-100 mt-0.5">
                   {endTime || '--:--'}
                 </p>
               </div>
               <div>
-                <p className="text-[11px] font-medium text-slate-500">Precio</p>
-                <p className="text-sm font-bold text-slate-900 tabular-nums mt-0.5">
+                <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                  Precio
+                </p>
+                <p className="text-sm font-bold text-slate-900 dark:text-slate-100 tabular-nums mt-0.5">
                   {formatCurrency(price, settings.currency.symbol, settings.currency.code)}
                 </p>
               </div>
@@ -534,25 +554,25 @@ export const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
 
           {/* 4. NOTAS */}
           <section className="space-y-1.5 pb-2">
-            <label className="block text-sm font-bold text-slate-900">
-              Notas <span className="text-xs font-normal text-slate-500">(opcional)</span>
+            <label className="block text-sm font-bold text-slate-900 dark:text-slate-100">
+              Notas <span className="text-xs font-normal text-slate-500 dark:text-slate-400">(opcional)</span>
             </label>
             <textarea
               rows={2}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Indicaciones para esta cita..."
-              className="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B3B6F]"
+              className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-[#1B3B6F] dark:focus:ring-blue-500"
             />
           </section>
         </form>
 
         {/* Sticky footer CTA */}
-        <div className="px-5 py-3.5 border-t border-slate-200 bg-white pb-safe flex items-center gap-2.5 shrink-0">
+        <div className="px-5 py-3.5 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 pb-safe flex items-center gap-2.5 shrink-0">
           <button
             type="button"
             onClick={onClose}
-            className="min-h-[46px] px-4 rounded-xl border border-slate-300 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+            className="min-h-[46px] px-4 rounded-xl border border-slate-300 dark:border-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800"
           >
             Cancelar
           </button>
@@ -562,8 +582,8 @@ export const AppointmentFormModal: React.FC<AppointmentFormModalProps> = ({
             onClick={handleSubmit}
             className={`flex-1 min-h-[46px] px-4 rounded-xl text-sm font-bold transition-colors ${
               canSave
-                ? 'bg-[#1B3B6F] text-white hover:bg-[#152E58] active:bg-[#102446]'
-                : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                ? 'bg-[#1B3B6F] hover:bg-[#152E58] dark:bg-blue-600 dark:hover:bg-blue-500 text-white'
+                : 'bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed'
             }`}
           >
             {editingAppointment ? 'Guardar cambios' : 'Guardar cita'}

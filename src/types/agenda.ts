@@ -66,12 +66,15 @@ export interface CurrencyConfig {
   symbol: string; // $, €
 }
 
+export type ThemeMode = 'light' | 'dark';
+
 export interface BarberSettings {
   barbershopName: string;
   defaultCountryCode: string; // e.g. +52
   currency: CurrencyConfig;
   weeklySchedule: WeeklySchedule;
   services: ServiceItem[];
+  theme?: ThemeMode;
 }
 
 export interface AppState {

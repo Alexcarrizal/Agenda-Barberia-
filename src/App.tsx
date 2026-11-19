@@ -8,6 +8,7 @@ import {
   BlockType,
   Client,
   PaymentStatus,
+  ThemeMode,
   TimeBlock,
 } from './types/agenda';
 import { createSeedState, loadAppState, saveAppState } from './data/seedData';
@@ -61,6 +62,22 @@ export function App() {
   useEffect(() => {
     saveAppState(appState);
   }, [appState]);
+
+  const theme: ThemeMode = appState.settings.theme ?? 'light';
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+  }, [theme]);
+
+  const handleToggleTheme = () => {
+    setAppState((prev) => ({
+      ...prev,
+      settings: {
+        ...prev.settings,
+        theme: (prev.settings.theme ?? 'light') === 'dark' ? 'light' : 'dark',
+      },
+    }));
+  };
 
   const detailAppointment = useMemo(
     () => appState.appointments.find((a) => a.id === detailAppointmentId) ?? null,
@@ -299,19 +316,21 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F2F4F7] text-slate-900 flex flex-col">
+    <div className="min-h-screen bg-[#F2F4F7] dark:bg-[#0B1120] text-slate-900 dark:text-slate-100 flex flex-col">
       {/* Main active screen */}
       <div className="flex-1">
         {activeTab === 'agenda' && (
           <AgendaView
             selectedDate={selectedDate}
             viewMode={agendaViewMode}
+            theme={theme}
             settings={appState.settings}
             clients={appState.clients}
             appointments={appState.appointments}
             blocks={appState.blocks}
             onChangeDate={setSelectedDate}
             onChangeViewMode={setAgendaViewMode}
+            onToggleTheme={handleToggleTheme}
             onOpenCalendarModal={() => setShowMonthModal(true)}
             onOpenNewAppointment={handleOpenNewAppointment}
             onOpenAppointmentDetail={(appt) => setDetailAppointmentId(appt.id)}
@@ -350,7 +369,7 @@ export function App() {
       {/* Fixed Bottom Navigation Bar */}
       <nav
         aria-label="Navegación principal"
-        className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 pb-safe shadow-[0_-2px_10px_rgba(15,23,42,0.05)]"
+        className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 pb-safe shadow-[0_-2px_10px_rgba(15,23,42,0.05)] dark:shadow-[0_-2px_12px_rgba(0,0,0,0.4)]"
       >
         <div className="max-w-3xl mx-auto grid grid-cols-4 items-center h-16 px-2">
           <button
@@ -358,8 +377,8 @@ export function App() {
             onClick={() => setActiveTab('agenda')}
             className={`min-h-[48px] flex flex-col items-center justify-center rounded-xl transition-colors ${
               activeTab === 'agenda'
-                ? 'text-[#1B3B6F]'
-                : 'text-slate-500 hover:text-slate-800'
+                ? 'text-[#1B3B6F] dark:text-blue-400'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
             }`}
           >
             <CalendarDays
@@ -380,8 +399,8 @@ export function App() {
             onClick={() => setActiveTab('clientes')}
             className={`min-h-[48px] flex flex-col items-center justify-center rounded-xl transition-colors ${
               activeTab === 'clientes'
-                ? 'text-[#1B3B6F]'
-                : 'text-slate-500 hover:text-slate-800'
+                ? 'text-[#1B3B6F] dark:text-blue-400'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
             }`}
           >
             <Users
@@ -402,7 +421,7 @@ export function App() {
             <button
               type="button"
               onClick={() => handleOpenNewAppointment(selectedDate)}
-              className="w-13 h-11 rounded-2xl bg-[#1B3B6F] hover:bg-[#152E58] active:scale-95 text-white shadow-md flex items-center justify-center transition-all"
+              className="w-13 h-11 rounded-2xl bg-[#1B3B6F] hover:bg-[#152E58] dark:bg-blue-600 dark:hover:bg-blue-500 active:scale-95 text-white shadow-md flex items-center justify-center transition-all"
               aria-label="Nueva cita"
             >
               <Plus className="w-6 h-6" strokeWidth={2.5} />
@@ -414,8 +433,8 @@ export function App() {
             onClick={() => setActiveTab('ajustes')}
             className={`min-h-[48px] flex flex-col items-center justify-center rounded-xl transition-colors ${
               activeTab === 'ajustes'
-                ? 'text-[#1B3B6F]'
-                : 'text-slate-500 hover:text-slate-800'
+                ? 'text-[#1B3B6F] dark:text-blue-400'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
             }`}
           >
             <Settings
