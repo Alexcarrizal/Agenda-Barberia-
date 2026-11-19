@@ -191,9 +191,21 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
       {/* Top sticky header */}
       <header className="sticky top-0 z-30 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-3 sm:px-5 pt-2.5 pb-2.5 shadow-2xs">
         <div className="max-w-3xl mx-auto space-y-2.5">
-          {/* Row 1: Date switcher (< Date >) + Hoy + Bloquear tiempo */}
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-0.5 sm:gap-1 min-w-0">
+          {/* Row 1: Centered Date switcher (< Date >) with Hoy (left) & theme toggle (right) */}
+          <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-1">
+            <div className="flex items-center justify-start">
+              {!isToday && (
+                <button
+                  type="button"
+                  onClick={() => onChangeDate(todayISO)}
+                  className="min-h-[36px] px-2.5 sm:px-3 py-1 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#1B3B6F] dark:text-blue-300 text-xs font-bold hover:bg-blue-100 dark:hover:bg-blue-900/60 transition-colors whitespace-nowrap"
+                >
+                  Hoy
+                </button>
+              )}
+            </div>
+
+            <div className="flex items-center justify-center gap-0.5 sm:gap-1 min-w-0">
               <button
                 type="button"
                 onClick={() => onChangeDate(addDays(selectedDate, -1))}
@@ -206,7 +218,7 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
               <button
                 type="button"
                 onClick={onOpenCalendarModal}
-                className="min-h-[44px] px-2 sm:px-2.5 rounded-xl flex items-center gap-1.5 sm:gap-2 hover:bg-slate-100 dark:hover:bg-slate-800 active:bg-slate-200 dark:active:bg-slate-700 transition-colors min-w-0"
+                className="min-h-[44px] px-2 sm:px-3 rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 hover:bg-slate-100 dark:hover:bg-slate-800 active:bg-slate-200 dark:active:bg-slate-700 transition-colors min-w-0"
                 aria-label="Abrir calendario mensual"
               >
                 <CalendarDays className="w-4 h-4 text-[#1B3B6F] dark:text-blue-400 shrink-0" />
@@ -225,28 +237,24 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
               </button>
             </div>
 
-            <div className="flex items-center gap-1.5 shrink-0">
-              {!isToday && (
-                <button
-                  type="button"
-                  onClick={() => onChangeDate(todayISO)}
-                  className="min-h-[38px] px-2.5 sm:px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#1B3B6F] dark:text-blue-300 text-xs font-bold hover:bg-blue-100 dark:hover:bg-blue-900/60 transition-colors whitespace-nowrap"
-                >
-                  Hoy
-                </button>
-              )}
+            <div className="flex items-center justify-end">
               <button
                 type="button"
-                onClick={() => onOpenBlockModal(selectedDate)}
-                className="min-h-[38px] px-2.5 sm:px-3 py-1.5 rounded-xl border border-[#1B3B6F]/25 dark:border-blue-500/40 bg-white dark:bg-slate-800 text-[#1B3B6F] dark:text-blue-300 text-xs font-semibold hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-1.5 whitespace-nowrap"
+                onClick={onToggleTheme}
+                className="min-h-[38px] min-w-[38px] flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-amber-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors shrink-0"
+                aria-label={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+                title={theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}
               >
-                <Lock className="w-3.5 h-3.5 shrink-0" />
-                <span>Bloquear tiempo</span>
+                {theme === 'dark' ? (
+                  <Sun className="w-4 h-4" />
+                ) : (
+                  <Moon className="w-4 h-4" />
+                )}
               </button>
             </div>
           </div>
 
-          {/* Row 2: Lista / Calendario segmented control + quick day summary + theme toggle */}
+          {/* Row 2: Lista / Calendario segmented control + Bloquear tiempo */}
           <div className="flex items-center justify-between gap-2">
             <div
               className="grid grid-cols-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl w-44 sm:w-48 shrink-0"
@@ -281,35 +289,33 @@ export const AgendaView: React.FC<AgendaViewProps> = ({
               </button>
             </div>
 
-            <div className="flex items-center gap-2 min-w-0">
-              <div className="text-xs text-slate-600 dark:text-slate-300 font-medium tabular-nums truncate text-right">
-                {isToday ? 'Hoy · ' : ''}
-                {activeAppointments.length}{' '}
-                {activeAppointments.length === 1 ? 'cita' : 'citas'}
-                {!isDayBlocked && daySchedule?.enabled && totalFreeMin > 0
-                  ? ` · ${formatDurationLabel(totalFreeMin)} libres`
-                  : ''}
-              </div>
-              <button
-                type="button"
-                onClick={onToggleTheme}
-                className="min-h-[38px] min-w-[38px] flex items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-amber-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors shrink-0"
-                aria-label={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-                title={theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}
-              >
-                {theme === 'dark' ? (
-                  <Sun className="w-4 h-4" />
-                ) : (
-                  <Moon className="w-4 h-4" />
-                )}
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => onOpenBlockModal(selectedDate)}
+              className="min-h-[38px] px-3 py-1.5 rounded-xl border border-[#1B3B6F]/25 dark:border-blue-500/40 bg-white dark:bg-slate-800 text-[#1B3B6F] dark:text-blue-300 text-xs font-semibold hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-1.5 whitespace-nowrap shrink-0"
+            >
+              <Lock className="w-3.5 h-3.5 shrink-0" />
+              <span>Bloquear tiempo</span>
+            </button>
           </div>
         </div>
       </header>
 
       {/* Main scrollable content */}
       <main className="flex-1 px-3 sm:px-5 pt-3 pb-32 max-w-3xl w-full mx-auto space-y-3">
+        {/* Quiet day summary strip */}
+        <div className="flex items-center justify-between px-1 text-xs text-slate-600 dark:text-slate-400 font-medium tabular-nums">
+          <span>
+            {isToday ? 'Hoy' : 'Resumen del día'} · {activeAppointments.length}{' '}
+            {activeAppointments.length === 1 ? 'cita' : 'citas'}
+          </span>
+          {!isDayBlocked && daySchedule?.enabled && totalFreeMin > 0 && (
+            <span className="text-[#1B3B6F] dark:text-blue-400 font-semibold">
+              {formatDurationLabel(totalFreeMin)} libres
+            </span>
+          )}
+        </div>
+
         {/* Full-day blocked band */}
         {isDayBlocked && (
           <div className="rounded-2xl bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-800 px-4 py-3 flex items-center justify-between gap-3">
