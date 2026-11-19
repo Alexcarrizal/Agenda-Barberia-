@@ -1,0 +1,6 @@
+{
+  "name": "Agenda Barbería",
+  "description": "Agenda móvil privada para barberos: gestiona citas, espacios libres, bloqueos de horario, clientes y recordatorios directos por WhatsApp.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
