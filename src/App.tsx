@@ -7,12 +7,25 @@ import {
   BarberSettings,
   BlockType,
   Client,
+  LocalUserAccount,
   PaymentStatus,
   ThemeMode,
   TimeBlock,
 } from './types/agenda';
-import { createSeedState, loadAppState, saveAppState } from './data/seedData';
+import {
+  createEmptyUserState,
+  createSeedState,
+  loadUserAppState,
+  saveUserAppState,
+} from './data/seedData';
+import {
+  clearActiveSession,
+  getActiveSessionUser,
+  loadPreferredTheme,
+  savePreferredTheme,
+} from './utils/auth';
 import { getTodayISO, minutesToTime, timeToMinutes } from './utils/date';
+import { AuthView } from './components/AuthView';
 import { AgendaView, AgendaViewMode } from './components/AgendaView';
 import { MonthCalendarModal } from './components/MonthCalendarModal';
 import { AppointmentFormModal } from './components/AppointmentFormModal';
@@ -25,7 +38,15 @@ import { SettingsView } from './components/SettingsView';
 type MainTab = 'agenda' | 'clientes' | 'ajustes';
 
 export function App() {
-  const [appState, setAppState] = useState<AppState>(() => loadAppState());
+  const [currentUser, setCurrentUser] = useState<LocalUserAccount | null>(() =>
+    getActiveSessionUser()
+  );
+  const [authTheme, setAuthTheme] = useState<ThemeMode>(() => loadPreferredTheme());
+  const [appState, setAppState] = useState<AppState>(() => {
+    const active = getActiveSessionUser();
+    if (!active) return createEmptyUserState();
+    return loadUserAppState(active.id, active.barbershopName);
+  });
   const [activeTab, setActiveTab] = useState<MainTab>('agenda');
   const [selectedDate, setSelectedDate] = useState<string>(() => getTodayISO());
   const [agendaViewMode, setAgendaViewMode] = useState<AgendaViewMode>('calendario');
@@ -58,18 +79,24 @@ export function App() {
 
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
 
-  // Persist every state change in localStorage
+  // Persist every state change in the active user's isolated localStorage key
   useEffect(() => {
-    saveAppState(appState);
-  }, [appState]);
+    if (!currentUser) return;
+    saveUserAppState(currentUser.id, appState);
+  }, [currentUser, appState]);
 
-  const theme: ThemeMode = appState.settings.theme ?? 'light';
+  const theme: ThemeMode = currentUser ? (appState.settings.theme ?? 'light') : authTheme;
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
+    savePreferredTheme(theme);
   }, [theme]);
 
   const handleToggleTheme = () => {
+    if (!currentUser) {
+      setAuthTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+      return;
+    }
     setAppState((prev) => ({
       ...prev,
       settings: {
@@ -77,6 +104,37 @@ export function App() {
         theme: (prev.settings.theme ?? 'light') === 'dark' ? 'light' : 'dark',
       },
     }));
+  };
+
+  const resetUiModals = () => {
+    setShowMonthModal(false);
+    setAppointmentFormState({
+      isOpen: false,
+      editingAppointment: null,
+      prefillDate: getTodayISO(),
+    });
+    setDetailAppointmentId(null);
+    setWhatsAppAppointmentId(null);
+    setBlockModalState({ isOpen: false, prefillDate: getTodayISO() });
+    setSelectedClientId(null);
+    setActiveTab('agenda');
+    setSelectedDate(getTodayISO());
+  };
+
+  const handleAuthenticated = (user: LocalUserAccount, initialState?: AppState) => {
+    const loadedState = initialState ?? loadUserAppState(user.id, user.barbershopName);
+    setAppState(loadedState);
+    setCurrentUser(user);
+    setAuthTheme(loadedState.settings.theme ?? 'light');
+    resetUiModals();
+  };
+
+  const handleLogout = () => {
+    clearActiveSession();
+    setAuthTheme(appState.settings.theme ?? 'light');
+    setCurrentUser(null);
+    setAppState(createEmptyUserState());
+    resetUiModals();
   };
 
   const detailAppointment = useMemo(
@@ -311,9 +369,26 @@ export function App() {
 
   const handleResetDemoData = () => {
     const fresh = createSeedState();
-    setAppState(fresh);
+    setAppState({
+      ...fresh,
+      settings: {
+        ...fresh.settings,
+        barbershopName: currentUser?.barbershopName || fresh.settings.barbershopName,
+        theme: appState.settings.theme ?? 'light',
+      },
+    });
     setSelectedDate(getTodayISO());
   };
+
+  if (!currentUser) {
+    return (
+      <AuthView
+        theme={theme}
+        onToggleTheme={handleToggleTheme}
+        onAuthenticated={handleAuthenticated}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#F2F4F7] dark:bg-[#0B1120] text-slate-900 dark:text-slate-100 flex flex-col">
@@ -358,10 +433,12 @@ export function App() {
 
         {activeTab === 'ajustes' && (
           <SettingsView
+            currentUser={currentUser}
             appState={appState}
             onUpdateSettings={handleUpdateSettings}
             onRestoreBackup={handleRestoreBackup}
             onResetDemoData={handleResetDemoData}
+            onLogout={handleLogout}
           />
         )}
       </div>

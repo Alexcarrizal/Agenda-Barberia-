@@ -92,3 +92,13 @@ export interface FreeGap {
   endMin: number;
   durationMin: number;
 }
+
+export interface LocalUserAccount {
+  id: string;
+  name: string;
+  username: string;
+  barbershopName: string;
+  passwordHash: string;
+  salt: string;
+  createdAt: string;
+}

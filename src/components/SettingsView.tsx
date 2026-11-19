@@ -3,22 +3,32 @@ import {
   Check,
   Download,
   HardDrive,
+  LogOut,
   Moon,
   Plus,
   RotateCcw,
   Sun,
   Trash2,
   Upload,
+  UserCheck,
 } from 'lucide-react';
-import { AppState, BarberSettings, CurrencyConfig, ServiceItem } from '../types/agenda';
+import {
+  AppState,
+  BarberSettings,
+  CurrencyConfig,
+  LocalUserAccount,
+  ServiceItem,
+} from '../types/agenda';
 import { DAY_NAMES_ORDERED, formatCurrency } from '../utils/date';
 import { parseBackupFile } from '../data/seedData';
 
 interface SettingsViewProps {
+  currentUser: LocalUserAccount;
   appState: AppState;
   onUpdateSettings: (settings: BarberSettings) => void;
   onRestoreBackup: (state: AppState) => void;
   onResetDemoData: () => void;
+  onLogout: () => void;
 }
 
 const CURRENCY_OPTIONS: { label: string; config: CurrencyConfig }[] = [
@@ -32,10 +42,12 @@ const CURRENCY_OPTIONS: { label: string; config: CurrencyConfig }[] = [
 ];
 
 export const SettingsView: React.FC<SettingsViewProps> = ({
+  currentUser,
   appState,
   onUpdateSettings,
   onRestoreBackup,
   onResetDemoData,
+  onLogout,
 }) => {
   const { settings } = appState;
   const currentTheme = settings.theme ?? 'light';
@@ -141,8 +153,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     const dateStamp = new Date().toISOString().slice(0, 10);
+    const safeUser = currentUser.username.replace(/[^a-z0-9_-]/gi, '_');
     a.href = url;
-    a.download = `respaldo-barberia-${dateStamp}.json`;
+    a.download = `respaldo-barberia-${safeUser}-${dateStamp}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -193,6 +206,31 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             <span>{feedbackMsg.text}</span>
           </div>
         )}
+
+        {/* Cuenta activa y cerrar sesión */}
+        <section className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 shadow-2xs flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#1B3B6F] dark:text-blue-400 flex items-center justify-center shrink-0">
+              <UserCheck className="w-5 h-5" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate">
+                {currentUser.name}
+              </p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                @{currentUser.username} · Base de clientes individual
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onLogout}
+            className="min-h-[42px] px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-bold flex items-center gap-1.5 shrink-0 transition-colors"
+          >
+            <LogOut className="w-4 h-4" />
+            <span>Cerrar sesión</span>
+          </button>
+        </section>
 
         {/* 0. Apariencia (Claro / Oscuro) */}
         <section className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 space-y-3 shadow-2xs">

@@ -222,6 +222,97 @@ export function createSeedState(): AppState {
   };
 }
 
+export function createEmptyUserState(barbershopName?: string, theme: 'light' | 'dark' = 'light'): AppState {
+  return {
+    version: 1,
+    settings: {
+      ...DEFAULT_SETTINGS,
+      barbershopName: barbershopName?.trim() || DEFAULT_SETTINGS.barbershopName,
+      theme,
+      weeklySchedule: {
+        '0': { ...DEFAULT_SETTINGS.weeklySchedule['0'] },
+        '1': { ...DEFAULT_SETTINGS.weeklySchedule['1'] },
+        '2': { ...DEFAULT_SETTINGS.weeklySchedule['2'] },
+        '3': { ...DEFAULT_SETTINGS.weeklySchedule['3'] },
+        '4': { ...DEFAULT_SETTINGS.weeklySchedule['4'] },
+        '5': { ...DEFAULT_SETTINGS.weeklySchedule['5'] },
+        '6': { ...DEFAULT_SETTINGS.weeklySchedule['6'] },
+      },
+      services: DEFAULT_SETTINGS.services.map((s) => ({ ...s })),
+    },
+    clients: [],
+    appointments: [],
+    blocks: [],
+  };
+}
+
+export function getUserStorageKey(userId: string): string {
+  return `agenda_barberia_user_${userId}_v1`;
+}
+
+function isValidAppState(parsed: unknown): parsed is AppState {
+  if (!parsed || typeof parsed !== 'object') return false;
+  const obj = parsed as Partial<AppState>;
+  return Boolean(
+    obj.settings &&
+      typeof obj.settings.barbershopName === 'string' &&
+      Array.isArray(obj.clients) &&
+      Array.isArray(obj.appointments) &&
+      Array.isArray(obj.blocks)
+  );
+}
+
+export function hasLegacyAppState(): boolean {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return false;
+    const parsed = JSON.parse(raw);
+    return isValidAppState(parsed);
+  } catch {
+    return false;
+  }
+}
+
+export function loadLegacyAppState(): AppState | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return isValidAppState(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+export function loadUserAppState(userId: string, fallbackBarbershopName?: string): AppState {
+  const key = getUserStorageKey(userId);
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) {
+      const empty = createEmptyUserState(fallbackBarbershopName);
+      localStorage.setItem(key, JSON.stringify(empty));
+      return empty;
+    }
+    const parsed = JSON.parse(raw);
+    if (!isValidAppState(parsed)) {
+      const empty = createEmptyUserState(fallbackBarbershopName);
+      localStorage.setItem(key, JSON.stringify(empty));
+      return empty;
+    }
+    return parsed;
+  } catch {
+    return createEmptyUserState(fallbackBarbershopName);
+  }
+}
+
+export function saveUserAppState(userId: string, state: AppState): void {
+  try {
+    localStorage.setItem(getUserStorageKey(userId), JSON.stringify(state));
+  } catch {
+    // Ignore quota errors cleanly
+  }
+}
+
 export function loadAppState(): AppState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -230,15 +321,8 @@ export function loadAppState(): AppState {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(seed));
       return seed;
     }
-    const parsed = JSON.parse(raw) as AppState;
-    if (
-      !parsed ||
-      typeof parsed !== 'object' ||
-      !parsed.settings ||
-      !Array.isArray(parsed.clients) ||
-      !Array.isArray(parsed.appointments) ||
-      !Array.isArray(parsed.blocks)
-    ) {
+    const parsed = JSON.parse(raw);
+    if (!isValidAppState(parsed)) {
       const seed = createSeedState();
       localStorage.setItem(STORAGE_KEY, JSON.stringify(seed));
       return seed;

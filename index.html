@@ -23,11 +23,16 @@
     />
     <script>
       try {
-        var raw = localStorage.getItem('agenda_barberia_state_v1');
-        if (raw) {
-          var parsed = JSON.parse(raw);
-          if (parsed && parsed.settings && parsed.settings.theme === 'dark') {
-            document.documentElement.classList.add('dark');
+        var savedTheme = localStorage.getItem('agenda_barberia_theme_v1');
+        if (savedTheme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else if (!savedTheme) {
+          var raw = localStorage.getItem('agenda_barberia_state_v1');
+          if (raw) {
+            var parsed = JSON.parse(raw);
+            if (parsed && parsed.settings && parsed.settings.theme === 'dark') {
+              document.documentElement.classList.add('dark');
+            }
           }
         }
       } catch (e) {}
